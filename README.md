@@ -3,6 +3,9 @@ ElevenLabs generates high qaulity voice acting, but has not implemented natural 
 Prepending voice lines with "[interrupting]" tag does affect intonation, but fails to overlap multiple speakers.
 This makes it hard to make an illusion of a heated debate.
 
+<img width="1536" height="1024" alt="debate" src="https://github.com/user-attachments/assets/43134397-4738-4819-97ee-b3ac4ece7fd6" />
+
+
 # Solution
 Use API to generate non-ovelpaping acting and shift voice clips around in a post-processing remix to achieve the overlap.
 
