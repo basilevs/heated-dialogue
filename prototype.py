@@ -14,7 +14,8 @@ def text_to_dialogue_with_abrupt_interruptions(dialogue_client: TextToDialogueCl
     segment_shifts=[]
     total_shift = 0.    
     length = 0.
-    for line, segment in zip(inputs, response.voice_segments):
+    for segment in response.voice_segments:
+        line = inputs[segment.dialogue_input_index]
         if line.text.startswith('[interrupting]'):
             total_shift += min(shift, segment.start_time_seconds)
         segment_shifts.append(total_shift)
@@ -58,8 +59,7 @@ inputs=[
 
 
 root.setLevel(DEBUG)
-output_path = "dialogue_audio.mp3"
-audio = text_to_dialogue_with_abrupt_interruptions(client.text_to_dialogue, inputs, shift=1.0)
-audio.export(output_path, format="mp3")
+audio = text_to_dialogue_with_abrupt_interruptions(client.text_to_dialogue, inputs, shift=0.5)
+output_path = audio.export("dialogue_audio.mp3", format="mp3")
 
 print(f"Saved audio to {output_path}")
