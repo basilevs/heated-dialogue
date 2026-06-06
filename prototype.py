@@ -1,6 +1,7 @@
 """
 Increase value of SHIFT constant (in seconds) to make interruptions more abrupt and annoying.
 Modify "inputs" array to change the dialog.
+To make a speaker interrupt a previous one, start the voice line with "[interrupting]".
 """
 
 SHIFT = 0.5
