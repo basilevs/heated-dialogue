@@ -37,6 +37,9 @@ from logging import debug, root, DEBUG
 from copy import replace
 
 def text_to_dialogue_with_abrupt_interruptions(dialogue_client: TextToDialogueClient, inputs: Sequence[DialogueInput], shift=0.5) -> AudioSegment:
+    # Use of "[interrupting]" tag in the voice lines triggers a bug in ElevenAPI mangling responce timings.
+    # The voices do not overlap.
+    # As a workaround, we replace such tags with a similar "[jumping in]" and shift timing around explicitly in post-processing.
     bug_workaround = []
     for i in inputs:
         d = i
