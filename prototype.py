@@ -1,14 +1,49 @@
+"""
+Increase value of SHIFT constant (in seconds) to make interruptions more abrupt and annoying.
+Modify "inputs" array to change the dialog.
+"""
+
+SHIFT = 0.5
+
+from elevenlabs import ElevenLabs, DialogueInput
+
+inputs=[
+    DialogueInput(
+        text="So I was thinking we could-",
+        voice_id="UgBBYS2sOqTuMpoF3BR0",
+    ),
+    DialogueInput(
+        text="[interrupting] -test our new timing features?",
+        voice_id="XcXEQzuLXRU9RcfWzEJt",
+    ),
+    DialogueInput(
+        text="Exactly! How did you-",
+        voice_id="UgBBYS2sOqTuMpoF3BR0",
+    ),
+    DialogueInput(
+        text="[interrupting] -know what you were thinking? Lucky guess!",
+        voice_id="XcXEQzuLXRU9RcfWzEJt",
+    )
+]
+
+
 from base64 import b64decode
 from os import getenv
 from typing import Sequence
-from elevenlabs import ElevenLabs, DialogueInput
 from elevenlabs.text_to_dialogue.client import TextToDialogueClient
 from pydub import AudioSegment
 from io import BytesIO
 from logging import debug, root, DEBUG
+from copy import replace
 
 def text_to_dialogue_with_abrupt_interruptions(dialogue_client: TextToDialogueClient, inputs: Sequence[DialogueInput], shift=0.5) -> AudioSegment:
-    response = dialogue_client.convert_with_timestamps(inputs=inputs)
+    bug_workaround = []
+    for i in inputs:
+        d = i
+        if d.text.startswith('[interrupting]'):
+            d = replace(d, text = d.text.replace('[interrupting]', '[jumping in]'))
+        bug_workaround.append(d)
+    response = dialogue_client.convert_with_timestamps(inputs=bug_workaround)
     segment_shifts=[]
     total_shift = 0.    
     length = 0.
@@ -36,28 +71,11 @@ def text_to_dialogue_with_abrupt_interruptions(dialogue_client: TextToDialogueCl
     return processed_audio
 
 client = ElevenLabs(api_key=getenv("ELEVENLABS_API_KEY"))
-inputs=[
-    DialogueInput(
-        text="So I was thinking we could-",
-        voice_id="UgBBYS2sOqTuMpoF3BR0",
-    ),
-    DialogueInput(
-        text="[interrupting] -test our new timing features?",
-        voice_id="XcXEQzuLXRU9RcfWzEJt",
-    ),
-    DialogueInput(
-        text="Exactly! How did you-",
-        voice_id="UgBBYS2sOqTuMpoF3BR0",
-    ),
-    DialogueInput(
-        text="[interrupting] -know what you were thinking? Lucky guess!",
-        voice_id="XcXEQzuLXRU9RcfWzEJt",
-    )
-]
 
 
 root.setLevel(DEBUG)
-audio = text_to_dialogue_with_abrupt_interruptions(client.text_to_dialogue, inputs, shift=0.5)
-output_path = audio.export("dialogue_audio.mp3", format="mp3")
+audio = text_to_dialogue_with_abrupt_interruptions(client.text_to_dialogue, inputs, shift=SHIFT)
+output_path = "dialogue_audio.mp3"
+audio.export(output_path, format="mp3")
 
 print(f"Saved audio to {output_path}")
