@@ -33,7 +33,7 @@ from typing import Sequence
 from elevenlabs.text_to_dialogue.client import TextToDialogueClient
 from pydub import AudioSegment
 from io import BytesIO
-from logging import debug, root, DEBUG
+from logging import debug, root, DEBUG, INFO
 from copy import replace
 
 def text_to_dialogue_with_abrupt_interruptions(dialogue_client: TextToDialogueClient, inputs: Sequence[DialogueInput], shift=0.5) -> AudioSegment:
@@ -76,7 +76,7 @@ def text_to_dialogue_with_abrupt_interruptions(dialogue_client: TextToDialogueCl
 client = ElevenLabs(api_key=getenv("ELEVENLABS_API_KEY"))
 
 
-root.setLevel(DEBUG)
+root.setLevel(INFO)
 audio = text_to_dialogue_with_abrupt_interruptions(client.text_to_dialogue, inputs, shift=SHIFT)
 output_path = "dialogue_audio.mp3"
 audio.export(output_path, format="mp3")
