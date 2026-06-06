@@ -7,8 +7,6 @@ from pydub import AudioSegment
 from io import BytesIO
 from logging import debug, root, DEBUG
 
-
-
 def text_to_dialogue_with_abrupt_interruptions(dialogue_client: TextToDialogueClient, inputs: Sequence[DialogueInput], shift=0.5) -> AudioSegment:
     response = dialogue_client.convert_with_timestamps(inputs=inputs)
     segment_shifts=[]
