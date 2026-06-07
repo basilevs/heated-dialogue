@@ -17,6 +17,6 @@ def text2dialogue() -> None:
 
     available_speakers = ['UgBBYS2sOqTuMpoF3BR0', 'XcXEQzuLXRU9RcfWzEJt']
     inputs = parse_dialogue(sys.stdin.readlines(), available_speakers)
-    audio = text_to_dialogue_with_abrupt_interruptions(client.text_to_dialogue, inputs, shift=0.5)
+    audio = text_to_dialogue_with_abrupt_interruptions(client.text_to_dialogue, list(inputs), shift=0.5)
     output_path = "dialogue_audio.mp3"
     audio.export(output_path, format="mp3")

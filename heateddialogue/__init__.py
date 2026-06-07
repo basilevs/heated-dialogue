@@ -12,7 +12,7 @@ from elevenlabs.text_to_dialogue.client import TextToDialogueClient
 
 def text_to_dialogue_with_abrupt_interruptions(
         dialogue_client: TextToDialogueClient,
-        inputs: Sequence[DialogueInput],
+        inputs: List[DialogueInput],
         shift=0.5) -> AudioSegment:
     # Use of "[interrupting]" tag in the voice lines triggers a bug in
     # ElevenAPI mangling responce timings. The voices do not overlap.
@@ -67,7 +67,7 @@ def parse_dialogue(text: Sequence[str], voice_ids: List[str]) -> Sequence[Dialog
     default_voice_id = None
     speaker_by_name: Dict[str, str] = {}
     for line in text:
-        fields = line.split(":", 2)
+        fields = line.split(": ", 2)
         if len(fields) < 2:
             if not default_voice_id:
                 default_voice_id = voice_ids.pop()
