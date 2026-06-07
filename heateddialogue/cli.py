@@ -9,6 +9,40 @@ from elevenlabs import ElevenLabs
 from heateddialogue import parse_dialogue, text_to_dialogue_with_abrupt_interruptions
 
 
+def _fetch_voice_ids(client: ElevenLabs, voice_type: str) -> list[str]:
+    """Return up to 100 voice IDs for a given ElevenLabs voice_type."""
+
+    try:
+        response = client.voices.search(
+            voice_type=voice_type,
+            page_size=100,
+        )
+    except Exception as exc:
+        raise SystemExit(f"Failed to fetch ElevenLabs voices: {exc}") from exc
+
+    voice_ids: list[str] = []
+    for voice in response.voices:
+        voice_id = voice.voice_id
+        if voice_id:
+            voice_ids.append(voice_id)
+
+    return voice_ids
+
+
+def get_available_speakers(client: ElevenLabs) -> list[str]:
+    """Fetch user voices first, then fall back to default voices."""
+
+    saved_voice_ids = _fetch_voice_ids(client, "saved")
+    if saved_voice_ids:
+        return saved_voice_ids
+
+    default_voice_ids = _fetch_voice_ids(client, "default")
+    if default_voice_ids:
+        return default_voice_ids
+
+    raise SystemExit("No voices available from ElevenLabs (saved or default).")
+
+
 def detect_export_format(filename: str) -> str:
     """Infer an export format from output filename extension.
 
@@ -58,11 +92,11 @@ def text2dialogue() -> None:
 
     api_key=getenv("ELEVENLABS_API_KEY")
     if not api_key:
-        raise SystemExit(f"Set ELEVENLABS_API_KEY environment variable")
+        raise SystemExit("Set ELEVENLABS_API_KEY environment variable")
     
     client = ElevenLabs(api_key=api_key)
 
-    available_speakers = ['UgBBYS2sOqTuMpoF3BR0', 'XcXEQzuLXRU9RcfWzEJt']
+    available_speakers = get_available_speakers(client)
     inputs = parse_dialogue(sys.stdin.readlines(), available_speakers)
     audio = text_to_dialogue_with_abrupt_interruptions(
         client.text_to_dialogue,

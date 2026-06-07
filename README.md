@@ -11,19 +11,29 @@ Use API to generate non-ovelpaping acting and shift voice clips around in a post
 
 # Disclaimer
 This is an upolished prototype demostrating the feasibility.
+Voice discovery fetches only the first page from
+ElevenLabs (up to 100 voices). It checks saved voices first and falls back to
+default voices.
 
 # Prerequisites
 FFmpeg has to be available. Check by running:
-
 ```
 ffmpeg -version
 ```
 
 # Run
 ```
+pip install 'git+https://github.com/basilevs/heated-dialogue.git#egg=heated-dialogue'
+export ELEVENLABS_API_KEY=<key>
+text2dialogue --shift 0.7 dialogue_audio.mp3 <<EOF
+Speaker 1: I'm talking a lot-
+Speaker 2: [interrupting] I'm interrupting
+EOF
+open dialogue_audio.mp3
+```
+
+# Contribute
+```
 git clone https://github.com/basilevs/heated-dialogue.git
 pip install -e ./heated-dialogue
-export ELEVENLABS_API_KEY=<key>
-python3 ./heated-dialogue/prototype.py
-open dialogue_audio.mp3
 ```
