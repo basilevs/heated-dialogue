@@ -1,5 +1,5 @@
 # Problem
-ElevenLabs generates high qaulity voice acting, but has not implemented natural interruptions yet.
+ElevenLabs generates high quality voice acting, but has not implemented natural interruptions yet.
 Prepending voice lines with "[interrupting]" tag does affect intonation, but fails to overlap multiple speakers.
 This makes it hard to make an illusion of a heated debate.
 
@@ -20,6 +20,9 @@ FFmpeg has to be available. Check by running:
 ```
 ffmpeg -version
 ```
+Eleven Labs API Key with permissions:
+- Text to Speech (Access)
+- Voices (Read)
 
 # Run
 ```
