@@ -78,7 +78,10 @@ def parse_dialogue(text: Sequence[str], voice_ids: List[str]) -> Sequence[Dialog
                 next_voice_id = voice_ids[0]
             except IndexError as e:
                 speakers = ([fields[0]] + list(speaker_by_name.keys()))
-                raise ValueError(f"Too many speakers found: {speakers}, add more voices." ) from e
+                voices = list(speaker_by_name.values())
+                if default_voice_id:
+                    voices.append(default_voice_id)
+                raise ValueError(f"Too many speakers: {speakers}, not enough voices: {voices}. Save more voices to My Voices category." ) from e
             voice_id = speaker_by_name.setdefault(fields[0], next_voice_id)
             if next_voice_id == voice_ids[0]:
                 del voice_ids[0]
