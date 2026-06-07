@@ -1,5 +1,6 @@
 """Command-line entry points for the heated-dialogue package."""
 import argparse
+from logging import DEBUG, root
 from os import getenv
 from pathlib import Path
 import sys
@@ -97,6 +98,7 @@ def text2dialogue() -> None:
     client = ElevenLabs(api_key=api_key)
 
     available_speakers = get_available_speakers(client)
+    #root.setLevel(DEBUG)
     inputs = parse_dialogue(sys.stdin.readlines(), available_speakers)
     audio = text_to_dialogue_with_abrupt_interruptions(
         client.text_to_dialogue,

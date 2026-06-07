@@ -64,6 +64,7 @@ def parse_dialogue(text: Sequence[str], voice_ids: List[str]) -> Sequence[Dialog
         Lines without a colon would be spoken by a "default" voice.
     """
     voice_ids = list(voice_ids)
+    debug("Available voices: {}", voice_ids)
     default_voice_id = None
     speaker_by_name: Dict[str, str] = {}
     for line in text:
@@ -83,7 +84,7 @@ def parse_dialogue(text: Sequence[str], voice_ids: List[str]) -> Sequence[Dialog
                     voices.append(default_voice_id)
                 raise ValueError(f"Too many speakers: {speakers}, not enough voices: {voices}. Save more voices to My Voices category." ) from e
             voice_id = speaker_by_name.setdefault(fields[0], next_voice_id)
-            if next_voice_id == voice_ids[0]:
+            if next_voice_id == voice_id:
                 del voice_ids[0]
             speech = fields[1]
         yield DialogueInput(text=speech, voice_id=voice_id)
