@@ -1,23 +1,70 @@
 """Command-line entry points for the heated-dialogue package."""
 import argparse
 from os import getenv
+from pathlib import Path
 import sys
 
 from elevenlabs import ElevenLabs
 
 from heateddialogue import parse_dialogue, text_to_dialogue_with_abrupt_interruptions
 
+
+def detect_export_format(filename: str) -> str:
+    """Infer an export format from output filename extension.
+
+    pydub requires explicit format names that are sometimes different from
+    common file extensions (for example, .m4a uses the ffmpeg `ipod` muxer).
+    """
+
+    extension = Path(filename).suffix.lower().lstrip(".")
+    if not extension:
+        raise SystemExit("Output filename must include an extension, e.g. output.mp3")
+
+    extension_to_format = {
+        "mp3": "mp3",
+        "wav": "wav",
+        "flac": "flac",
+        "ogg": "ogg",
+        "oga": "ogg",
+        "aac": "adts",
+        "m4a": "ipod",
+        "mp4": "mp4",
+        "aif": "aiff",
+        "aiff": "aiff",
+    }
+
+    export_format = extension_to_format.get(extension)
+    if export_format is None:
+        supported = ", ".join(sorted(extension_to_format.keys()))
+        raise SystemExit(f"Unsupported output extension '.{extension}'. Supported: {supported}")
+
+    return export_format
+
 def text2dialogue() -> None:
     """Read text from stdin and export generated dialogue audio to a file."""
 
     parser = argparse.ArgumentParser()
     parser.add_argument("filename", help="Output audio filename")
+    parser.add_argument(
+        "--shift",
+        type=float,
+        default=0.5,
+        help=(
+            "Interruption overlap in seconds. Larger values create longer "
+            "talk-over of the rude interrupter."
+        ),
+    )
     args = parser.parse_args()
 
     client = ElevenLabs(api_key=getenv("ELEVENLABS_API_KEY"))
 
     available_speakers = ['UgBBYS2sOqTuMpoF3BR0', 'XcXEQzuLXRU9RcfWzEJt']
     inputs = parse_dialogue(sys.stdin.readlines(), available_speakers)
-    audio = text_to_dialogue_with_abrupt_interruptions(client.text_to_dialogue, list(inputs), shift=0.5)
+    audio = text_to_dialogue_with_abrupt_interruptions(
+        client.text_to_dialogue,
+        list(inputs),
+        shift=args.shift,
+    )
     output_path = args.filename
-    audio.export(output_path, format="mp3")
+    output_format = detect_export_format(output_path)
+    audio.export(output_path, format=output_format)
