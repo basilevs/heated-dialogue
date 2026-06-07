@@ -56,7 +56,11 @@ def text2dialogue() -> None:
     )
     args = parser.parse_args()
 
-    client = ElevenLabs(api_key=getenv("ELEVENLABS_API_KEY"))
+    api_key=getenv("ELEVENLABS_API_KEY")
+    if not api_key:
+        raise SystemExit(f"Set ELEVENLABS_API_KEY environment variable")
+    
+    client = ElevenLabs(api_key=api_key)
 
     available_speakers = ['UgBBYS2sOqTuMpoF3BR0', 'XcXEQzuLXRU9RcfWzEJt']
     inputs = parse_dialogue(sys.stdin.readlines(), available_speakers)
